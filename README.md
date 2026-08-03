@@ -124,6 +124,13 @@ scripts/anvil-add-ref-commands.sh "$manifest" > /tmp/add-anvil-refs.sh
 
 # Review the commands before executing
 cat /tmp/add-anvil-refs.sh
+git drs add-ref --remote anvil drs://drs.anv0:v2_6d1cf5f0-99a8-3cd9-b580-01102f3abfe7 sequencing_dataset.tsv
+git drs add-ref --remote anvil drs://drs.anv0:v2_b6b829f3-6046-3f29-896f-495a23f24c14 subject.tsv
+git drs add-ref --remote anvil drs://drs.anv0:v2_093066ee-45f8-3664-9363-c602913ef0c7 sequencing_file.tsv
+git drs add-ref --remote anvil drs://drs.anv0:v2_a31c73cb-3bc8-3688-a1e5-05f2d63d0cf9 plink_file_wide.tsv
+git drs add-ref --remote anvil drs://drs.anv0:v2_d8add534-63b4-3077-9df5-5ebc8d138415 sample.tsv
+git drs add-ref --remote anvil drs://drs.anv0:v2_d6f6836d-688a-33b9-b3d9-f4e829830c0e sample_set.tsv
+git drs add-ref --remote anvil drs://drs.anv0:v2_e68887be-c583-375a-a773-48771192c8fa population_descriptor.tsv
 
 # Validate without writing (dry-run)
 bash /tmp/add-anvil-refs.sh --dry-run
