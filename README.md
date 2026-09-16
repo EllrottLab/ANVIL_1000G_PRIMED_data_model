@@ -106,6 +106,13 @@ git drs init
 
 # Configure the Terra remote (author-side, only in local .git/config)
 git drs remote add anvil terra
+>>> Remote: anvil
+Endpoint: https://data.terra.bio
+Provider: terra
+Auth: google-adc
+Preset: terra (built-in catalog v1)
+Remote saved.
+
 ```
 
 #### Step 2: Access ANVIL Data Explorer and Download Manifest
