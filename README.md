@@ -270,10 +270,9 @@ Python packages or genotype downloads are required. If the files are still
 DRS pointers, complete the consumer authentication and hydration workflow
 above first; the script reports an error rather than analyzing pointer text.
 
-From the git-drs repository root:
+From the ANVIL_1000G_PRIMED_data_model repository root:
 
 ```bash
-cd attic/ANVIL_1000G_PRIMED_data_model
 
 # Print the Markdown report to the terminal.
 python3 scripts/analyze_cohorts.py
