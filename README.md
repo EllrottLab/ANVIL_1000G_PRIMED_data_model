@@ -247,6 +247,138 @@ head sample.tsv
 | **Hydration** | Optional (for verification) | Required (to access data) |
 | **Isolation** | Home, config, cache separate | Home, config, cache separate |
 
+## Example Analysis: Cohort Representation and Overlap
+
+### Use Case
+
+Before combining datasets or selecting a replication cohort, a researcher
+needs to know which participants overlap and how population representation
+changes. [scripts/analyze_cohorts.py](scripts/analyze_cohorts.py) compares the
+Phase 3 cohort (`phase3_2504_samples`) with the expanded cohort
+(`all_3202_samples`) by default.
+
+The script joins `sample_set.tsv`, `sample.tsv`, `subject.tsv`, and
+`population_descriptor.tsv` using explicit IDs. It counts each subject once
+per cohort, even when memberships repeat or a subject has multiple samples.
+It reports shared, added, and removed subjects, population and superpopulation
+composition, and reported-sex balance.
+
+### Run the Analysis
+
+Requires **Python 3** and hydrated copies of the four TSVs above. No additional
+Python packages or genotype downloads are required. If the files are still
+DRS pointers, complete the consumer authentication and hydration workflow
+above first; the script reports an error rather than analyzing pointer text.
+
+From the git-drs repository root:
+
+```bash
+cd attic/ANVIL_1000G_PRIMED_data_model
+
+# Print the Markdown report to the terminal.
+python3 scripts/analyze_cohorts.py
+
+# Or save the report for review and sharing.
+python3 scripts/analyze_cohorts.py > cohort_analysis.md
+```
+
+If you are already in this dataset directory, omit the `cd` command. Input
+paths default to the script's parent data directory, regardless of the current
+working directory. To use another hydrated copy:
+
+```bash
+python3 scripts/analyze_cohorts.py --data-dir /path/to/hydrated/data
+```
+
+Compare other cohorts using exact `sample_set_id` values from `sample_set.tsv`:
+
+```bash
+python3 scripts/analyze_cohorts.py \
+  --baseline AFR_phase3_unrelated --target AFR_highcov_unrelated
+```
+
+Run the regression check from this dataset directory:
+
+```bash
+python3 -m unittest discover -s scripts -v
+```
+
+### Expected Output
+
+For the supplied tables, the default report starts with:
+
+```text
+# Cohort representation analysis
+
+Baseline: `phase3_2504_samples`; target: `all_3202_samples`.
+
+- Unique subjects: 2,504 → 3,202 (+27.9%).
+- Shared: 2,504; added: 698; removed: 0.
+- Unique subjects across both cohorts: 3,202. Adding the cohort sizes would double-count shared subjects.
+```
+
+The superpopulation summary is:
+
+| Label | Baseline n | Target n | Added | Removed | Share change (pp) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| AFR | 661 | 893 | 232 | 0 | +1.49 |
+| AMR | 347 | 490 | 143 | 0 | +1.45 |
+| EAS | 504 | 585 | 81 | 0 | -1.86 |
+| EUR | 503 | 633 | 130 | 0 | -0.32 |
+| SAS | 489 | 601 | 112 | 0 | -0.76 |
+
+The report also includes all 26 population labels and reported-sex counts.
+Share change is measured in percentage points:
+`100 × (target group count / target total − baseline group count / baseline total)`.
+
+The main findings are:
+
+- All 2,504 baseline subjects are retained, so these cohorts are **not
+  independent replication samples**. Combining their counts would duplicate
+  shared participants.
+- CEU has the largest absolute population-share change: 99 → 179 subjects,
+  an increase of **1.64 percentage points**.
+- EAS increases in count but decreases in cohort share, showing that overall
+  cohort growth does not imply proportional growth for every group.
+- Recorded Female/Male counts change from 1,271/1,233 to 1,603/1,599.
+
+These are descriptive metadata findings. Population labels are supplied
+annotations, not genetically inferred ancestry. The script does not estimate
+kinship, allele frequencies, disease associations, or statistical power;
+those analyses require additional data. In particular, `plink_file_wide.tsv`
+contains file references rather than genotype measurements, and a sample-set
+name containing `unrelated` is not a kinship assessment by this script.
+
+### Working with analysis output
+
+If a DRS server supports **writes** through a git-drs-compatible provider
+(metadata registration and payload upload), and your account has permission
+to publish, `cohort_analysis.md` can be tracked, committed, and pushed as a
+derived data artifact. Git stores its pointer while the report's contents are
+uploaded to the configured storage. This requires a writable publishing remote;
+the Terra/AnVIL source remote used above does not provide that publishing path.
+
+From this dataset repository, with a writable default DRS remote and a Git
+remote/upstream already configured:
+
+```bash
+# Generate the report from hydrated metadata.
+python3 scripts/analyze_cohorts.py > cohort_analysis.md
+
+# Track the report with git-drs, then commit its pointer and tracking rule.
+git drs track "cohort_analysis.md"
+git add .gitattributes cohort_analysis.md
+git commit -m "Add cohort representation analysis"
+
+# Register metadata, upload the report, and push the Git commit.
+git drs push
+```
+
+Use `git drs push` for this workflow: plain `git push` alone does not register
+the report or upload its contents. Other authorized users can hydrate the
+tracked report with `git drs pull -I "cohort_analysis.md"` after configuring
+access to the publishing remote.
+
 ## Working with the Repository
 
 ### Listing Tracked Files
