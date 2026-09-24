@@ -8,7 +8,7 @@ Requires Python 3 and hydrated `subject.tsv`, `sample.tsv`, `sample_set.tsv`,
 and `population_descriptor.tsv`. No packages or payload downloads are needed
 once these metadata tables are available.
 
-From `attic/ANVIL_1000G_PRIMED_data_model`:
+From `ANVIL_1000G_PRIMED_data_model`:
 
 ```bash
 python3 scripts/analyze_cohorts.py > cohort_analysis.md
